@@ -6,19 +6,19 @@ import com.hazelcast.nio.serialization.DataSerializable;
 
 import java.io.IOException;
 
-public class TicketsNYC implements DataSerializable {
+public class Tickets implements DataSerializable {
     private String licensePlate;
     private String issueDate;
-    private int infractionCode;
+    private long infractionCode;
     private double fineAmount;
     private String countyName;
     private String issuingAgency;
 
-    public TicketsNYC() {
+    public Tickets() {
 
     }
 
-    private TicketsNYC(
+    private Tickets(
             String licensePlate,
             String issueDate,
             int infractionCode,
@@ -34,7 +34,7 @@ public class TicketsNYC implements DataSerializable {
         this.issuingAgency = issuingAgency;
     }
 
-    public static TicketsNYC of(
+    public static Tickets of(
             String licensePlate,
             String issueDate,
             int infractionCode,
@@ -42,7 +42,7 @@ public class TicketsNYC implements DataSerializable {
             String countyName,
             String issuingAgency
     ) {
-        return new TicketsNYC(
+        return new Tickets(
                 licensePlate,
                 issueDate,
                 infractionCode,
@@ -60,7 +60,7 @@ public class TicketsNYC implements DataSerializable {
         return issueDate;
     }
 
-    public int getInfractionCode() {
+    public long getInfractionCode() {
         return infractionCode;
     }
 
@@ -80,7 +80,7 @@ public class TicketsNYC implements DataSerializable {
     public void writeData(ObjectDataOutput out) throws IOException {
         out.writeUTF(licensePlate);
         out.writeUTF(issueDate);
-        out.writeInt(infractionCode);
+        out.writeLong(infractionCode);
         out.writeDouble(fineAmount);
         out.writeUTF(countyName);
         out.writeUTF(issuingAgency);
@@ -90,7 +90,7 @@ public class TicketsNYC implements DataSerializable {
     public void readData(ObjectDataInput in) throws IOException {
         licensePlate = in.readUTF();
         issueDate = in.readUTF();
-        infractionCode = in.readInt();
+        infractionCode = in.readLong();
         fineAmount = in.readDouble();
         countyName = in.readUTF();
         issuingAgency = in.readUTF();
