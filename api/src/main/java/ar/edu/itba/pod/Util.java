@@ -1,6 +1,7 @@
 package ar.edu.itba.pod;
 
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
 
 public class Util {
     public final static String HAZELCAST_GROUP_NAME = "g";
@@ -12,4 +13,6 @@ public class Util {
     public final static DateTimeFormatter INPUT_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public static final int SYSTEM_TIMEOUT = 1;
+
+    public static final TimeUnit SYSTEM_TIMEOUT_UNIT = TimeUnit.MINUTES;
 }
