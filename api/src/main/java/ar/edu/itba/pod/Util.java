@@ -10,9 +10,10 @@ public class Util {
 
     public final static String HAZELCAST_NAMESPACE_2 = "g5-namespace-aux";
 
-    public final static DateTimeFormatter INPUT_DATETIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
     public static final int SYSTEM_TIMEOUT = 1;
 
     public static final TimeUnit SYSTEM_TIMEOUT_UNIT = TimeUnit.MINUTES;
+
+    public static final String TICKETS_FILENAME = "tickets";
+    public static final String INFRACTIONS_FILENAME = "infractions";
 }
