@@ -5,27 +5,21 @@ import com.hazelcast.nio.ObjectDataOutput;
 import com.hazelcast.nio.serialization.DataSerializable;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-public class Tickets implements DataSerializable {
+public class Ticket implements DataSerializable {
     private String licensePlate;
-    private String issueDate;
-    private long infractionCode;
+    private LocalDate issueDate;
+    private String infractionCode;
     private double fineAmount;
     private String countyName;
     private String issuingAgency;
 
-    public Tickets() {
-
+    public Ticket() {
     }
 
-    private Tickets(
-            String licensePlate,
-            String issueDate,
-            int infractionCode,
-            double fineAmount,
-            String countyName,
-            String issuingAgency
-    ) {
+    private Ticket(String licensePlate, LocalDate issueDate, String infractionCode, double fineAmount, String countyName, String issuingAgency) {
         this.licensePlate = licensePlate;
         this.issueDate = issueDate;
         this.infractionCode = infractionCode;
@@ -34,33 +28,19 @@ public class Tickets implements DataSerializable {
         this.issuingAgency = issuingAgency;
     }
 
-    public static Tickets of(
-            String licensePlate,
-            String issueDate,
-            int infractionCode,
-            double fineAmount,
-            String countyName,
-            String issuingAgency
-    ) {
-        return new Tickets(
-                licensePlate,
-                issueDate,
-                infractionCode,
-                fineAmount,
-                countyName,
-                issuingAgency
-        );
+    public static Ticket of(String licensePlate, String issueDate, String infractionCode, double fineAmount, String countyName, String issuingAgency) {
+        return new Ticket(licensePlate, LocalDate.parse(issueDate), infractionCode, fineAmount, countyName, issuingAgency);
     }
 
     public String getLicensePlate() {
         return licensePlate;
     }
 
-    public String getIssueDate() {
+    public LocalDate getIssueDate() {
         return issueDate;
     }
 
-    public long getInfractionCode() {
+    public String getInfractionCode() {
         return infractionCode;
     }
 
@@ -79,8 +59,8 @@ public class Tickets implements DataSerializable {
     @Override
     public void writeData(ObjectDataOutput out) throws IOException {
         out.writeUTF(licensePlate);
-        out.writeUTF(issueDate);
-        out.writeLong(infractionCode);
+        out.writeUTF(issueDate.format(DateTimeFormatter.ISO_DATE));
+        out.writeUTF(infractionCode);
         out.writeDouble(fineAmount);
         out.writeUTF(countyName);
         out.writeUTF(issuingAgency);
@@ -89,11 +69,10 @@ public class Tickets implements DataSerializable {
     @Override
     public void readData(ObjectDataInput in) throws IOException {
         licensePlate = in.readUTF();
-        issueDate = in.readUTF();
-        infractionCode = in.readLong();
+        issueDate = LocalDate.parse(in.readUTF(), DateTimeFormatter.ISO_DATE);
+        infractionCode = in.readUTF();
         fineAmount = in.readDouble();
         countyName = in.readUTF();
         issuingAgency = in.readUTF();
     }
 }
-
