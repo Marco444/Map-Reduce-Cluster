@@ -123,7 +123,6 @@ public abstract class QueryClient {
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(errors.toString());
         }
-        System.out.println(Arrays.toString(addresses));
     }
 
     private void loadData() {
