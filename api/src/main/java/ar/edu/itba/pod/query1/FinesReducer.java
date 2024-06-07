@@ -4,9 +4,9 @@ import ar.edu.itba.pod.data.LongTuple;
 import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 
-public class FinesReducer implements ReducerFactory<LongTuple, Integer, Integer> {
+public class FinesReducer implements ReducerFactory<String, Integer, Integer> {
     @Override
-    public Reducer<Integer, Integer> newReducer(LongTuple integerPair) {
+    public Reducer<Integer, Integer> newReducer(String violationCode) {
         return new Reducer<>() {
             private int sum;
 
