@@ -13,11 +13,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.stream.Stream;
 
 public abstract class QueryClient {
     private final static Logger logger = LoggerFactory.getLogger(QueryClient.class);
@@ -26,6 +25,7 @@ public abstract class QueryClient {
     private String[] addresses;
     private Path outPath;
     private Path inPath;
+    private Cities city;
 
     public QueryClient() {
         int status = 0;
@@ -94,6 +94,7 @@ public abstract class QueryClient {
         String addressesArgument = System.getProperty("addresses");
         String inPathArgument = System.getProperty("inPath");
         String outPathArgument = System.getProperty("outPath");
+        String cityArgument = System.getProperty("city");
 
         if (addressesArgument == null) {
             errors.append("Argument 'addresses' must be provided\n");
@@ -103,6 +104,9 @@ public abstract class QueryClient {
         }
         if (outPathArgument == null) {
             errors.append("Argument 'outPath' must be provided\n");
+        }
+        if (cityArgument == null) {
+            errors.append("Argument 'city' must be provided\n");
         }
 
         if (!errors.isEmpty()) {
@@ -120,22 +124,65 @@ public abstract class QueryClient {
             errors.append("Provided 'outPath' is not a directory\n");
         }
 
+        Optional<Cities> maybeCity = Cities.cityFromString(cityArgument);
+        if (!maybeCity.isPresent()) {
+            errors.append("Provided 'city' is not a valid city\n");
+        } else {
+            city = maybeCity.get();
+        }
+
+        generateTicketsPath();
+        generateInfractionsPath();
+
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(errors.toString());
         }
     }
 
+    private Path generateTicketsPath() throws IllegalArgumentException {
+        final String filename = Util.TICKETS_FILENAME + city.getCity() + ".csv";
+
+        Path path = Path.of(inPath.toString(), filename);
+        if (!Files.exists(path)) {
+            throw new IllegalArgumentException("File '" + filename + "' does not exist in provided inPath");
+        }
+        return path;
+    }
+
+    private Path generateInfractionsPath() throws IllegalArgumentException {
+        final String filename = Util.INFRACTIONS_FILENAME + city.getCity() + ".csv";
+
+        Path path = Path.of(inPath.toString(), filename);
+        if (!Files.exists(path)) {
+            throw new IllegalArgumentException("File '" + filename + "' does not exist in provided inPath");
+        }
+        return path;
+    }
+
     private void loadData() {
         if (hz == null) {
+            logger.error("Tried to load data with NULL Hazelcast instance.");
             return;
         }
 
-        try (
-                ExecutorService service = Executors.newCachedThreadPool()
-        ) {
+        try (ExecutorService service = Executors.newCachedThreadPool()) {
+            service.submit(new LoadTicketsRunnable(
+                    hz.getMultiMap(Util.HAZELCAST_NAMESPACE), generateTicketsPath(), city
+            ));
+
+            service.submit(new LoadInfractionsRunnable(
+                    hz.getMap(Util.HAZELCAST_NAMESPACE), generateInfractionsPath()
+            ));
 
             service.shutdown();
-            service.awaitTermination(Util.SYSTEM_TIMEOUT, Util.SYSTEM_TIMEOUT_UNIT);
+            boolean finished = service.awaitTermination(Util.SYSTEM_TIMEOUT, Util.SYSTEM_TIMEOUT_UNIT);
+            if (!finished) {
+                logger.error(
+                        "Load data service timed out after {} {} before reading all data.",
+                        Util.SYSTEM_TIMEOUT,
+                        Util.SYSTEM_TIMEOUT_UNIT
+                );
+            }
         } catch (InterruptedException e) {
             logger.error("Interrupted load of data");
             System.exit(2);
@@ -159,14 +206,5 @@ public abstract class QueryClient {
 
         hz.getMap(Util.HAZELCAST_NAMESPACE).clear();
         hz.getMultiMap(Util.HAZELCAST_NAMESPACE).clear();
-    }
-
-
-    private static class LoadTicketsRunnable implements Runnable {
-
-        @Override
-        public void run() {
-
-        }
     }
 }
