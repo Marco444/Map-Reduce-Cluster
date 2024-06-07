@@ -12,6 +12,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -23,6 +25,7 @@ public abstract class QueryClient {
     private HazelcastInstance hz;
     private String[] addresses;
     private Path outPath;
+    private Path inPath;
 
     public QueryClient() {
         int status = 0;
@@ -88,7 +91,6 @@ public abstract class QueryClient {
 
     public void checkArguments() throws IllegalArgumentException {
         StringBuilder errors = new StringBuilder();
-
         String addressesArgument = System.getProperty("addresses");
         String inPathArgument = System.getProperty("inPath");
         String outPathArgument = System.getProperty("outPath");
@@ -109,20 +111,19 @@ public abstract class QueryClient {
 
         this.addresses = addressesArgument.split(";");
 
-
-//        if (!Files.isDirectory(inPath)) {
-//            errors.append("Provided 'inPath' is not a directory\n");
-//        } else {
-//
-//        }
-//
-        if (!Files.isDirectory(this.outPath)) {
+        inPath = Paths.get(inPathArgument);
+        if (!Files.isDirectory(inPath)) {
+            errors.append("Provided 'inPath' is not a directory\n");
+        }
+        outPath = Paths.get(outPathArgument);
+        if (!Files.isDirectory(outPath)) {
             errors.append("Provided 'outPath' is not a directory\n");
         }
 
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(errors.toString());
         }
+        System.out.println(Arrays.toString(addresses));
     }
 
     private void loadData() {
@@ -140,6 +141,10 @@ public abstract class QueryClient {
             logger.error("Interrupted load of data");
             System.exit(2);
         }
+    }
+
+    public String[] getAddresses() {
+        return addresses;
     }
 
     public abstract void resolveQuery() throws ExecutionException, InterruptedException, IOException;

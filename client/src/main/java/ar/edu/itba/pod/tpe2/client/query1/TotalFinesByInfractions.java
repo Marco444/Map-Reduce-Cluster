@@ -6,6 +6,7 @@ import ar.edu.itba.pod.data.Tickets;
 import ar.edu.itba.pod.query1.FinesMapper;
 import ar.edu.itba.pod.query1.FinesReducer;
 import ar.edu.itba.pod.tpe2.client.QueryClient;
+import com.hazelcast.internal.networking.spinning.SpinningOutputThread;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
@@ -16,6 +17,13 @@ import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
 public class TotalFinesByInfractions extends QueryClient {
+
+
+
+    public TotalFinesByInfractions() {
+        super();
+    }
+
     @Override
     public void resolveQuery() throws ExecutionException, InterruptedException, IOException {
         final JobTracker jobTracker = getHz().getJobTracker(Util.HAZELCAST_NAMESPACE);
@@ -42,5 +50,9 @@ public class TotalFinesByInfractions extends QueryClient {
     @Override
     public String getQueryHeader() {
         return "infractions;total_fines";
+    }
+
+    public static void main(String[] args) {
+        QueryClient queryClient = new TotalFinesByInfractions();
     }
 }
