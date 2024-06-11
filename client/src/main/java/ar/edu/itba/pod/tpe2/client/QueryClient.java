@@ -144,16 +144,19 @@ public abstract class QueryClient {
 
         Path path = Path.of(inPath.toString(), filename);
         if (!Files.exists(path)) {
+            System.out.println(path);
             throw new IllegalArgumentException("File '" + filename + "' does not exist in provided inPath");
         }
         return path;
     }
 
     private Path generateInfractionsPath() throws IllegalArgumentException {
+
         final String filename = Util.INFRACTIONS_FILENAME + city.getCity() + ".csv";
 
         Path path = Path.of(inPath.toString(), filename);
         if (!Files.exists(path)) {
+            System.out.println(path);
             throw new IllegalArgumentException("File '" + filename + "' does not exist in provided inPath");
         }
         return path;

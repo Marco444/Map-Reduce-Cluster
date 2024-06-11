@@ -1,6 +1,5 @@
 package ar.edu.itba.pod.query1;
 
-import ar.edu.itba.pod.data.LongTuple;
 import com.hazelcast.mapreduce.Reducer;
 import com.hazelcast.mapreduce.ReducerFactory;
 
