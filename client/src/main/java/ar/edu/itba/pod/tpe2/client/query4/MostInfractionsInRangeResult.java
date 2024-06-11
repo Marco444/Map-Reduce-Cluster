@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.tpe2.client.query4;
 
+import ar.edu.itba.pod.Util;
 import ar.edu.itba.pod.tpe2.client.Result;
 
 public class MostInfractionsInRangeResult implements Result {
@@ -11,7 +12,7 @@ public class MostInfractionsInRangeResult implements Result {
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(county).append(",").append(top1Infraction).append(",").append(top2Infraction).append(",").append(top3Infraction);
+        builder.append(county).append(Util.CSV_DELIMITER).append(top1Infraction).append(Util.CSV_DELIMITER).append(top2Infraction).append(Util.CSV_DELIMITER).append(top3Infraction);
         return builder.toString();
     }
 
