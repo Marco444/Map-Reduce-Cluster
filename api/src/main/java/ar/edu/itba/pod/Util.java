@@ -17,4 +17,5 @@ public class Util {
     public static final String TICKETS_FILENAME = "tickets";
     public static final String INFRACTIONS_FILENAME = "infractions";
 
+    public static final char CSV_DELIMITER = ';';
 }
