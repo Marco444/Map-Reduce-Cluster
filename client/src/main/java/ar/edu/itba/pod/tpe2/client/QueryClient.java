@@ -9,10 +9,13 @@ import com.hazelcast.core.HazelcastInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -189,6 +192,22 @@ public abstract class QueryClient {
         } catch (InterruptedException e) {
             logger.error("Interrupted load of data");
             System.exit(2);
+        }
+    }
+
+    public void writeResults(Collection<? extends Result> results) throws IOException {
+        Path queryPath = outPath.resolve("query" + getQueryNumber() + ".csv");
+        try (BufferedWriter writer = Files.newBufferedWriter(
+                queryPath, StandardOpenOption.WRITE,
+                StandardOpenOption.CREATE,
+                StandardOpenOption.TRUNCATE_EXISTING
+        )) {
+            writer.write(getQueryHeader());
+            writer.newLine();
+            for (Result result : results) {
+                writer.write(result.toString());
+                writer.newLine();
+            }
         }
     }
 
