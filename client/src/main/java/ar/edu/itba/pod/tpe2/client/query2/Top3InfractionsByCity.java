@@ -1,6 +1,7 @@
 package ar.edu.itba.pod.tpe2.client.query2;
 
 import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.data.Infractions;
 import ar.edu.itba.pod.data.Ticket;
 import ar.edu.itba.pod.query1.FinesMapper;
 import ar.edu.itba.pod.query1.FinesReducer;
@@ -37,11 +38,21 @@ public class Top3InfractionsByCity extends QueryClient {
                 .submit()
                 .get();
 
+        Map<String, Infractions> infractionsMap = getHz().getMap(Util.HAZELCAST_NAMESPACE);
         List<Top3InfractionsByCityResult> results = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : reducedData.entrySet()) {
-            String infraction1 = !entry.getValue().isEmpty() ? entry.getValue().get(0) : "";
-            String infraction2 = entry.getValue().size() > 1 ? entry.getValue().get(1) : "";
-            String infraction3 = entry.getValue().size() > 2 ? entry.getValue().get(2) : "";
+
+            String infraction1 = !entry.getValue().isEmpty() && infractionsMap.containsKey(entry.getValue().get(0))
+                    ? infractionsMap.get(entry.getValue().get(0)).getDescription()
+                    : "";
+
+            String infraction2 = entry.getValue().size() > 1 && infractionsMap.containsKey(entry.getValue().get(1))
+                    ? infractionsMap.get(entry.getValue().get(1)).getDescription()
+                    : "";
+
+            String infraction3 = entry.getValue().size() > 2 && infractionsMap.containsKey(entry.getValue().get(2))
+                    ? infractionsMap.get(entry.getValue().get(2)).getDescription()
+                    : "";
             results.add(new Top3InfractionsByCityResult(entry.getKey(), infraction1, infraction2, infraction3));
         }
         writeResults(results);
