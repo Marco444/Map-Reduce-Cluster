@@ -5,6 +5,7 @@ import ar.edu.itba.pod.data.Infractions;
 import ar.edu.itba.pod.data.Ticket;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
+import com.hazelcast.core.MultiMap;
 import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 
@@ -15,7 +16,7 @@ public class FinesMapper implements Mapper<String, Ticket, String, Integer>, Haz
     @Serial
     private static final long serialVersionUID = 1L; // Add a unique serialVersionUID
 
-    private transient Map<String, Infractions> infractions;
+    private transient MultiMap<String, Infractions> infractions;
 
     public FinesMapper() {
     }
@@ -23,7 +24,7 @@ public class FinesMapper implements Mapper<String, Ticket, String, Integer>, Haz
 
     @Override
     public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        this.infractions = hazelcastInstance.getMap(Util.HAZELCAST_NAMESPACE);
+        this.infractions = hazelcastInstance.getMultiMap(Util.HAZELCAST_NAMESPACE);
     }
 
     @Override

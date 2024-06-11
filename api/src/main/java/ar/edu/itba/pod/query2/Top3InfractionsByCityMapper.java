@@ -11,11 +11,11 @@ import com.hazelcast.mapreduce.Mapper;
 import java.io.Serial;
 import java.util.Map;
 
-public class InfractionsMapper implements Mapper<String, Infractions, String, Integer>, HazelcastInstanceAware {
+public class InfractionsMapper implements Mapper<String, Ticket, String, Integer>, HazelcastInstanceAware {
     @Serial
     private static final long serialVersionUID = 1L; // Add a unique serialVersionUID
 
-    private transient Map<String, Infractions> infractions;
+    private transient Map<String, Ticket> tickets;
 
     private InfractionsMapper() {
     }
@@ -23,12 +23,12 @@ public class InfractionsMapper implements Mapper<String, Infractions, String, In
 
     @Override
     public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        this.infractions = hazelcastInstance.getMap(Util.HAZELCAST_NAMESPACE);
+        this.tickets = hazelcastInstance.getMap(Util.HAZELCAST_NAMESPACE);
     }
 
 
     @Override
-    public void map(String city, Infractions infraction, Context<String, Integer> context) {
-        context.emit(infraction.getCode(), 1);
+    public void map(String city, Ticket ticket, Context<String, Integer> context) {
+        context.emit(ticket.getCountyName(), 1);
     }
 }
