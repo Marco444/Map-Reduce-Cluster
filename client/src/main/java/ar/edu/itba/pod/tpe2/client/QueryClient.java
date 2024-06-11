@@ -150,12 +150,14 @@ public abstract class QueryClient {
             city = maybeCity.get();
         }
 
-        generateTicketsPath();
-        generateInfractionsPath();
-
         if (!errors.isEmpty()) {
             throw new IllegalArgumentException(errors.toString());
         }
+
+        generateTicketsPath();
+        generateInfractionsPath();
+
+
     }
 
     private Path generateTicketsPath() throws IllegalArgumentException {

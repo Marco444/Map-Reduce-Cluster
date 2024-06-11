@@ -13,7 +13,9 @@ import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 
+import javax.swing.*;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -22,7 +24,9 @@ public class TopNEarningAgencies extends QueryClient {
     private final int n;
 
     public TopNEarningAgencies(int n) {
+        super();
         this.n = n;
+        execute();
     }
 
     @Override
@@ -33,11 +37,23 @@ public class TopNEarningAgencies extends QueryClient {
 
         Job<String, Ticket> job = jobTracker.newJob(source);
 
-        Map<String, Map<String, Agency>> reducedData = job
+        Map<String, Double> reducedData = job
                 .mapper(new TopNEarningAgenciesMapper())
                 .reducer(new TopNEarningAgenciesReducer(n))
                 .submit()
                 .get();
+
+
+        double sum = 0;
+        List<TopNEarningAgenciesResult> results = new ArrayList<>();
+        for (Map.Entry<String, Double> entry : reducedData.entrySet()) {
+            sum += entry.getValue();
+        }
+        for (String key : reducedData.keySet()) {
+            System.out.println(key + ": " + (reducedData.get(key) / sum) * 100+ "%");
+            results.add(new TopNEarningAgenciesResult(key, (reducedData.get(key) / sum) * 100));
+        }
+        writeResults(results);
     }
 
     @Override
