@@ -13,6 +13,7 @@ import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -36,6 +37,14 @@ public class Top3InfractionsByCity extends QueryClient {
                 .submit()
                 .get();
 
+        List<Top3InfractionsByCityResult> results = new ArrayList<>();
+        for (Map.Entry<String, List<String>> entry : reducedData.entrySet()) {
+            String infraction1 = !entry.getValue().isEmpty() ? entry.getValue().get(0) : "";
+            String infraction2 = entry.getValue().size() > 1 ? entry.getValue().get(1) : "";
+            String infraction3 = entry.getValue().size() > 2 ? entry.getValue().get(2) : "";
+            results.add(new Top3InfractionsByCityResult(entry.getKey(), infraction1, infraction2, infraction3));
+        }
+        writeResults(results);
     }
 
     @Override
