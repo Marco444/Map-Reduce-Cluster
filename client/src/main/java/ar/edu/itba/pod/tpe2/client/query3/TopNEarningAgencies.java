@@ -15,9 +15,7 @@ import com.hazelcast.mapreduce.KeyValueSource;
 
 import javax.swing.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class TopNEarningAgencies extends QueryClient {
@@ -45,7 +43,7 @@ public class TopNEarningAgencies extends QueryClient {
 
 
         double sum = 0;
-        List<TopNEarningAgenciesResult> results = new ArrayList<>();
+        Set<TopNEarningAgenciesResult> results = new TreeSet<TopNEarningAgenciesResult>();
         for (Map.Entry<String, Double> entry : reducedData.entrySet()) {
             sum += entry.getValue();
         }

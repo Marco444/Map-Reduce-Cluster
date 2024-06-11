@@ -3,7 +3,7 @@ package ar.edu.itba.pod.tpe2.client.query3;
 import ar.edu.itba.pod.Util;
 import ar.edu.itba.pod.tpe2.client.Result;
 
-public class TopNEarningAgenciesResult implements Result {
+public class TopNEarningAgenciesResult implements Result, Comparable<TopNEarningAgenciesResult> {
 
     private final String agency;
     private final double percentage;
@@ -19,4 +19,12 @@ public class TopNEarningAgenciesResult implements Result {
         return sb.toString();
     }
 
+    @Override
+    public int compareTo(TopNEarningAgenciesResult topNEarningAgenciesResult) {
+        int cmp = Double.compare(this.percentage, topNEarningAgenciesResult.percentage);
+        if (cmp == 0) {
+            return (-1) * this.agency.compareTo(topNEarningAgenciesResult.agency);
+        }
+        return (-1) * cmp;
+    }
 }
