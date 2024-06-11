@@ -1,6 +1,7 @@
 package ar.edu.itba.pod.tpe2.client.query3;
 
 import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.data.Agency;
 import ar.edu.itba.pod.data.Ticket;
 import ar.edu.itba.pod.query2.Top3InfractionsByCityMapper;
 import ar.edu.itba.pod.query2.Top3InfractionsByCityReducer;
@@ -18,7 +19,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class TopNEarningAgencies extends QueryClient {
-    public TopNEarningAgencies() {
+    private final int n;
+
+    public TopNEarningAgencies(int n) {
+        this.n = n;
     }
 
     @Override
@@ -29,9 +33,9 @@ public class TopNEarningAgencies extends QueryClient {
 
         Job<String, Ticket> job = jobTracker.newJob(source);
 
-        Map<String, Double> reducedData = job
+        Map<String, Map<String, Agency>> reducedData = job
                 .mapper(new TopNEarningAgenciesMapper())
-                .reducer(new TopNEarningAgenciesReducer())
+                .reducer(new TopNEarningAgenciesReducer(n))
                 .submit()
                 .get();
     }
@@ -47,6 +51,7 @@ public class TopNEarningAgencies extends QueryClient {
     }
 
     public static void main(String[] args) {
-        QueryClient queryClient = new TopNEarningAgencies();
+        int n = 5;
+        QueryClient queryClient = new TopNEarningAgencies(n);
     }
 }
