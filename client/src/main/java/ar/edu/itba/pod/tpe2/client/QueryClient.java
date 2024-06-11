@@ -31,10 +31,26 @@ public abstract class QueryClient {
     private Cities city;
 
     public QueryClient() {
-        int status = 0;
         try {
             checkArguments();
             this.hz = startHazelcastClient(this.addresses);
+        } catch (IllegalArgumentException e) {
+            System.err.println("Oops! Invalid arguments were sent:\n" + e.getMessage());
+            System.exit(ExitCodes.ILLEGAL_ARGUMENT.ordinal());
+        } catch (IllegalStateException e) {
+            System.err.println("Oops! We weren't able to connect to Hazelcast. Is the server running?");
+            logger.error(e.getMessage(), e);
+            System.exit(ExitCodes.ILLEGAL_STATE.ordinal());
+        } catch (Exception e) {
+            System.err.println("Oops! Something unexpected went wrong, try again!");
+            logger.error(e.getMessage(), e);
+            System.exit(ExitCodes.UNKNOWN_ERROR.ordinal());
+        }
+    }
+
+    public void execute() {
+        int status = ExitCodes.OK.ordinal();
+        try {
             logger.warn("Hazelcast client started.");
             logger.info("Starting to load data.");
             loadData();
@@ -44,23 +60,23 @@ public abstract class QueryClient {
             logger.info("Finished map/reduce job.");
         } catch (IllegalArgumentException e) {
             System.err.println("Oops! Invalid arguments were sent:\n" + e.getMessage());
-            status = 64;
+            status = ExitCodes.ILLEGAL_ARGUMENT.ordinal();
         } catch (ExecutionException | InterruptedException e) {
             System.err.println("Oops! Something went wrong, try again!");
             logger.error(e.getMessage(), e);
-            status = 130;
+            status = ExitCodes.EXECUTION_ERROR.ordinal();
         } catch (IOException e) {
             System.err.println("Oops! Something went wrong when trying to write the results, try again!");
             logger.error(e.getMessage(), e);
-            status = 74;
+            status = ExitCodes.IO_ERROR.ordinal();
         } catch (IllegalStateException e) {
             System.err.println("Oops! We weren't able to connect to Hazelcast. Is the server running?");
             logger.error(e.getMessage(), e);
-            status = 69;
+            status = ExitCodes.ILLEGAL_STATE.ordinal();
         } catch (Exception e) {
             System.err.println("Oops! Something unexpected went wrong, try again!");
             logger.error(e.getMessage(), e);
-            status = 127;
+            status = ExitCodes.UNKNOWN_ERROR.ordinal();
         } finally {
             logger.info("Destroying data.");
             destroyData();

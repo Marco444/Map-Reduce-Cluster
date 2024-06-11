@@ -22,6 +22,7 @@ public class TotalFinesByInfractions extends QueryClient {
 
     public TotalFinesByInfractions() {
         super();
+        execute();
     }
 
     @Override
