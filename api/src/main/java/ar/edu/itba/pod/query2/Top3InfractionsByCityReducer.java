@@ -4,31 +4,39 @@ import com.hazelcast.mapreduce.ReducerFactory;
 
 import java.util.*;
 
-public class Top3InfractionsByCityReducer implements ReducerFactory<String, Integer, List<String>> {
+public class Top3InfractionsByCityReducer implements ReducerFactory<String, String, List<String>> {
 
     @Override
-    public Reducer<Integer, List<String>> newReducer(String s) {
+    public Reducer<String, List<String>> newReducer(String city) {
         return new Reducer<>() {
-            private transient PriorityQueue<Map.Entry<String, Integer>> topCities;
+            private transient Map<String, Integer> infractionCounts;
 
             @Override
             public void beginReduce() {
-                topCities = new PriorityQueue<>(Comparator.comparingInt(Map.Entry::getValue));
+                infractionCounts = new TreeMap<>();
             }
 
             @Override
-            public void reduce(Integer value) {
-                topCities.add(new AbstractMap.SimpleEntry<>(s, value));
-                if (topCities.size() > 3) {
-                    topCities.poll();
-                }
+            public void reduce(String infractionCode) {
+                infractionCounts.merge(infractionCode, 1, Integer::sum);
             }
 
             @Override
             public List<String> finalizeReduce() {
+                PriorityQueue<Map.Entry<String, Integer>> topInfractions = new PriorityQueue<>(
+                        Comparator.comparingInt(Map.Entry::getValue)
+                );
+
+                for (Map.Entry<String, Integer> entry : infractionCounts.entrySet()) {
+                    topInfractions.add(entry);
+                    if (topInfractions.size() > 3) {
+                        topInfractions.poll();
+                    }
+                }
+
                 List<String> result = new ArrayList<>();
-                while (!topCities.isEmpty()) {
-                    result.add(topCities.poll().getKey());
+                while (!topInfractions.isEmpty()) {
+                    result.add(topInfractions.poll().getKey());
                 }
                 Collections.reverse(result); // To have the highest infraction count first
                 return result;

@@ -11,7 +11,7 @@ import com.hazelcast.mapreduce.Mapper;
 import java.io.Serial;
 import java.util.Map;
 
-public class Top3InfractionsByCityMapper implements Mapper<String, Ticket, String, Integer>, HazelcastInstanceAware {
+public class Top3InfractionsByCityMapper implements Mapper<String, Ticket, String, String>, HazelcastInstanceAware {
     @Serial
     private static final long serialVersionUID = 1L; // Add a unique serialVersionUID
 
@@ -28,7 +28,8 @@ public class Top3InfractionsByCityMapper implements Mapper<String, Ticket, Strin
 
 
     @Override
-    public void map(String city, Ticket ticket, Context<String, Integer> context) {
-        context.emit(ticket.getCountyName(), 1);
+    public void map(String city, Ticket ticket, Context<String, String> context) {
+        context.emit(ticket.getCountyName(), ticket.getInfractionCode());
+        //this should be city, first arg?
     }
 }
