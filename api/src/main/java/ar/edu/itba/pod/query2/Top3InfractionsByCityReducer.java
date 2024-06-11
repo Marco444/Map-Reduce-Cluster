@@ -13,7 +13,7 @@ public class Top3InfractionsByCityReducer implements ReducerFactory<String, Stri
 
             @Override
             public void beginReduce() {
-                infractionCounts = new TreeMap<>();
+                infractionCounts = new HashMap<>();
             }
 
             @Override
