@@ -45,7 +45,7 @@ public class TotalFinesByInfractions extends QueryClient {
 
     @Override
     public String getQueryHeader() {
-        return "infractions;total_fines";
+        return "Infraction;Tickets";
     }
 
     public static void main(String[] args) {

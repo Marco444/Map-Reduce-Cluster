@@ -4,7 +4,7 @@ import com.hazelcast.mapreduce.ReducerFactory;
 
 import java.util.*;
 
-public class InfractionsReducer implements ReducerFactory<String, Integer, List<String>> {
+public class Top3InfractionsByCityReducer implements ReducerFactory<String, Integer, List<String>> {
 
     @Override
     public Reducer<Integer, List<String>> newReducer(String s) {
