@@ -3,39 +3,40 @@ package ar.edu.itba.pod.tpe2.client.query4;
 import ar.edu.itba.pod.Util;
 import ar.edu.itba.pod.tpe2.client.Result;
 
-public class MostInfractionsInRangeResult implements Result {
+public class MostInfractionsInRangeResult implements Result, Comparable<MostInfractionsInRangeResult> {
     private final String county;
-    private final String top1Infraction;
-    private final String top2Infraction;
-    private final String top3Infraction;
+    private final String plate;
+    private final int tickets;
+
 
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(county).append(Util.CSV_DELIMITER).append(top1Infraction).append(Util.CSV_DELIMITER).append(top2Infraction).append(Util.CSV_DELIMITER).append(top3Infraction);
+        builder.append(county).append(Util.CSV_DELIMITER).append(plate).append(Util.CSV_DELIMITER).append(tickets);
         return builder.toString();
     }
 
-    public MostInfractionsInRangeResult(String county, String top1Infraction, String top2Infraction, String top3Infraction) {
+    public MostInfractionsInRangeResult(String county, String plate, int tickets) {
         this.county = county;
-        this.top1Infraction = top1Infraction;
-        this.top2Infraction = top2Infraction;
-        this.top3Infraction = top3Infraction;
+        this.plate = plate;
+        this.tickets = tickets;
     }
 
-    public String getTop3Infraction() {
-        return top3Infraction;
+    public String getPlate() {
+        return plate;
     }
 
-    public String getTop2Infraction() {
-        return top2Infraction;
-    }
-
-    public String getTop1Infraction() {
-        return top1Infraction;
+    public int getTickets() {
+        return tickets;
     }
 
     public String getCounty() {
         return county;
+    }
+
+    @Override
+    public int compareTo(MostInfractionsInRangeResult o) {
+        int cmp = county.compareTo(o.getCounty());
+        return cmp;
     }
 }
