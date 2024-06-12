@@ -26,7 +26,7 @@ public class SameAverageValuePairsResults implements Result, Comparable<SameAver
     public int compareTo(SameAverageValuePairsResults sameAverageValuePairsResults) {
         int cmp = (-1) * group.compareTo(sameAverageValuePairsResults.group);
         if(cmp != 0) return cmp;
-        cmp = typeA.compareTo(sameAverageValuePairsResults.typeA);
+        cmp = (-1) * typeA.compareTo(sameAverageValuePairsResults.typeA);
         if(cmp != 0) return cmp;
         return typeB.compareTo(sameAverageValuePairsResults.typeB);
     }
