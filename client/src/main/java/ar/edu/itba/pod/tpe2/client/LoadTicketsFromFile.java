@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.tpe2.client;
 
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.data.Ticket;
 import com.hazelcast.core.MultiMap;
 import org.slf4j.Logger;
@@ -49,7 +50,8 @@ public class LoadTicketsFromFile {
 
             });
         } catch (IOException e) {
-            logger.error("Could not load data :(", e);
+            System.err.println(Constants.ERROR_MESSAGE_IO);
+            logger.error("Could not load tickets data", e);
             throw e;
         }
     }

@@ -1,8 +1,7 @@
 package ar.edu.itba.pod.query5;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.data.Infractions;
-import ar.edu.itba.pod.data.Ticket;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
 import com.hazelcast.core.MultiMap;
@@ -18,8 +17,8 @@ public class groupByAverageMapper implements Mapper<String, Double, Integer, Str
 
     @Override
     public void setHazelcastInstance (HazelcastInstance hazelcastInstance){
-        this.averages = hazelcastInstance.getMultiMap(Util.HAZELCAST_NAMESPACE_QUERY_5);
-        this.infractions = hazelcastInstance.getMap(Util.HAZELCAST_NAMESPACE);
+        this.averages = hazelcastInstance.getMultiMap(Constants.HAZELCAST_NAMESPACE_QUERY_5);
+        this.infractions = hazelcastInstance.getMap(Constants.HAZELCAST_NAMESPACE);
     }
 
     @Override

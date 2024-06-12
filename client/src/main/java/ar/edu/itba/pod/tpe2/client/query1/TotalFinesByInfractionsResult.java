@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.tpe2.client.query1;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.tpe2.client.Result;
 
 public class TotalFinesByInfractionsResult implements Result {
@@ -14,7 +14,7 @@ public class TotalFinesByInfractionsResult implements Result {
 
     @Override
     public String toString() {
-        return infraction + Util.CSV_DELIMITER + tickets;
+        return infraction + Constants.CSV_DELIMITER + tickets;
     }
 
     public String getInfraction() {

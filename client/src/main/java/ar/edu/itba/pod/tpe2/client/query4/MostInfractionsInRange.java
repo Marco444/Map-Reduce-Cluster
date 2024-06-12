@@ -1,11 +1,13 @@
 package ar.edu.itba.pod.tpe2.client.query4;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.data.Infractions;
 import ar.edu.itba.pod.data.Ticket;
 import ar.edu.itba.pod.query4.MostInfractionsInRangeMapper;
 import ar.edu.itba.pod.query4.MostInfractionsInRangeReducer;
+import ar.edu.itba.pod.tpe2.client.ClientArguments;
 import ar.edu.itba.pod.tpe2.client.QueryClient;
+import ar.edu.itba.pod.tpe2.client.Util;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
@@ -32,9 +34,9 @@ public class MostInfractionsInRange extends QueryClient {
 
     @Override
     public void resolveQuery() throws ExecutionException, InterruptedException, IOException {
-        final JobTracker jobTracker = getHz().getJobTracker(Util.HAZELCAST_NAMESPACE);
+        final JobTracker jobTracker = getHz().getJobTracker(Constants.HAZELCAST_NAMESPACE);
 
-        final KeyValueSource<String, Ticket> source = KeyValueSource.fromMultiMap(getHz().getMultiMap(Util.HAZELCAST_NAMESPACE));
+        final KeyValueSource<String, Ticket> source = KeyValueSource.fromMultiMap(getHz().getMultiMap(Constants.HAZELCAST_NAMESPACE));
 
         Job<String, Ticket> job = jobTracker.newJob(source);
 
@@ -44,7 +46,7 @@ public class MostInfractionsInRange extends QueryClient {
                 .submit()
                 .get();
 
-        Map<String, Infractions> infractionsMap = getHz().getMap(Util.HAZELCAST_NAMESPACE);
+        Map<String, Infractions> infractionsMap = getHz().getMap(Constants.HAZELCAST_NAMESPACE);
         TreeSet<MostInfractionsInRangeResult> results = new TreeSet<>();
 
         for (Map.Entry<String, String> entry : reducedData.entrySet()) {
@@ -70,20 +72,11 @@ public class MostInfractionsInRange extends QueryClient {
     }
 
     public static void main(String[] args) {
-        StringBuilder errors = new StringBuilder();
-        String fromArgument = System.getProperty("from");
-        String toArgument = System.getProperty("to");
+        String fromArgument = System.getProperty(ClientArguments.FROM.getArgument());
+        String toArgument = System.getProperty(ClientArguments.TO.getArgument());
 
-        if (fromArgument == null) {
-            errors.append("Argument 'from' must be provided with a valid date\n");
-        }
-        if (toArgument == null) {
-            errors.append("Argument 'to' must be provided with a valid date\n");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new IllegalArgumentException(errors.toString());
-        }
+        Util.requireArgument(fromArgument, ClientArguments.FROM);
+        Util.requireArgument(toArgument, ClientArguments.TO);
 
         LocalDate from = LocalDate.parse(fromArgument, ARGUMENT_DATE_FORMATTER);
         LocalDate to = LocalDate.parse(toArgument, ARGUMENT_DATE_FORMATTER);

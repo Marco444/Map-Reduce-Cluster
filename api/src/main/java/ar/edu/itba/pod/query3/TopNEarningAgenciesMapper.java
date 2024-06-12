@@ -1,7 +1,6 @@
 package ar.edu.itba.pod.query3;
 
-import ar.edu.itba.pod.Util;
-import ar.edu.itba.pod.data.Infractions;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.data.Ticket;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
@@ -24,7 +23,7 @@ public class TopNEarningAgenciesMapper implements Mapper<String, Ticket, String,
 
     @Override
     public void setHazelcastInstance (HazelcastInstance hazelcastInstance){
-        this.tickets = hazelcastInstance.getMultiMap(Util.HAZELCAST_NAMESPACE);
+        this.tickets = hazelcastInstance.getMultiMap(Constants.HAZELCAST_NAMESPACE);
     }
 
     @Override

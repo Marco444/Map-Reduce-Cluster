@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.tpe2.client.query4;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.tpe2.client.Result;
 
 public class MostInfractionsInRangeResult implements Result, Comparable<MostInfractionsInRangeResult> {
@@ -12,7 +12,7 @@ public class MostInfractionsInRangeResult implements Result, Comparable<MostInfr
     @Override
     public String toString() {
         StringBuilder builder = new StringBuilder();
-        builder.append(county).append(Util.CSV_DELIMITER).append(plate).append(Util.CSV_DELIMITER).append(tickets);
+        builder.append(county).append(Constants.CSV_DELIMITER).append(plate).append(Constants.CSV_DELIMITER).append(tickets);
         return builder.toString();
     }
 

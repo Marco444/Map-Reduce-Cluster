@@ -1,11 +1,6 @@
 package ar.edu.itba.pod.query4;
 
-import ar.edu.itba.pod.Util;
-import ar.edu.itba.pod.data.Infractions;
 import ar.edu.itba.pod.data.Ticket;
-import com.hazelcast.core.HazelcastInstance;
-import com.hazelcast.core.HazelcastInstanceAware;
-import com.hazelcast.core.MultiMap;
 import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 

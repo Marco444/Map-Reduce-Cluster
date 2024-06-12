@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.tpe2.server;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import com.hazelcast.config.*;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
@@ -13,33 +13,31 @@ public class Server {
     private static final Logger logger = LoggerFactory.getLogger(Server.class);
 
     public static void main(String[] args) {
-        logger.info("Starting Hazelcast cluster...");
-
-        final String subnetMask = System.getProperty("subnetMask");
+        final String addressArgument = System.getProperty("address");
 
         final Config config = new Config();
         final GroupConfig groupConfig = new GroupConfig()
-                .setName(Util.HAZELCAST_GROUP_NAME)
-                .setPassword(Util.HAZELCAST_GROUP_PASSWORD);
+                .setName(Constants.HAZELCAST_GROUP_NAME)
+                .setPassword(Constants.HAZELCAST_GROUP_PASSWORD);
         config.setGroupConfig(groupConfig);
 
         final JoinConfig joinConfig = new JoinConfig().setMulticastConfig(new MulticastConfig());
         final NetworkConfig networkConfig = new NetworkConfig().setJoin(joinConfig);
-        if (subnetMask != null) {
+        if (addressArgument != null) {
             InterfacesConfig interfacesConfig = new InterfacesConfig()
-                    .setInterfaces(Collections.singletonList(subnetMask))
+                    .setInterfaces(Collections.singletonList(addressArgument))
                     .setEnabled(true);
             networkConfig.setInterfaces(interfacesConfig);
+            logger.debug("Found subnet mask: {}", addressArgument);
         }
+
         config.setNetworkConfig(networkConfig);
 
-        config.setProperty("hazelcast.logging.type", "none");
-
-        config.getMultiMapConfig(Util.HAZELCAST_NAMESPACE)
+        config.getMultiMapConfig(Constants.HAZELCAST_NAMESPACE)
                 .setValueCollectionType(MultiMapConfig.ValueCollectionType.LIST);
 
         // Start cluster
         final HazelcastInstance instance = Hazelcast.newHazelcastInstance(config);
-        logger.info("Hazelcast cluster discoverable on " + instance.getCluster().getLocalMember().getAddress());
+        logger.info("Cluster discoverable on {}", instance.getCluster().getLocalMember().getAddress());
     }
 }

@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.tpe2.client.query3;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.tpe2.client.Result;
 
 import java.math.RoundingMode;
@@ -23,7 +23,7 @@ public class TopNEarningAgenciesResult implements Result, Comparable<TopNEarning
         df.setRoundingMode(RoundingMode.DOWN);
         String truncatedPercentage = df.format(percentage);
 
-        sb.append(agency).append(Util.CSV_DELIMITER).append(truncatedPercentage).append("%");
+        sb.append(agency).append(Constants.CSV_DELIMITER).append(truncatedPercentage).append("%");
         return sb.toString();
     }
 

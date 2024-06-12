@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.query1;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.data.Infractions;
 import ar.edu.itba.pod.data.Ticket;
 import com.hazelcast.core.HazelcastInstance;
@@ -10,7 +10,6 @@ import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 
 import java.io.Serial;
-import java.util.Map;
 
 public class FinesMapper implements Mapper<String, Ticket, String, Integer>, HazelcastInstanceAware {
     @Serial
@@ -24,7 +23,7 @@ public class FinesMapper implements Mapper<String, Ticket, String, Integer>, Haz
 
     @Override
     public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        this.infractions = hazelcastInstance.getMultiMap(Util.HAZELCAST_NAMESPACE);
+        this.infractions = hazelcastInstance.getMultiMap(Constants.HAZELCAST_NAMESPACE);
     }
 
     @Override

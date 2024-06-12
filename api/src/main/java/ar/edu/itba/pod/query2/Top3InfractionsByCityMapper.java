@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.query2;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.data.Ticket;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
@@ -9,7 +9,6 @@ import com.hazelcast.mapreduce.Context;
 import com.hazelcast.mapreduce.Mapper;
 
 import java.io.Serial;
-import java.util.Map;
 
 public class Top3InfractionsByCityMapper implements Mapper<String, Ticket, String, String>, HazelcastInstanceAware {
     @Serial
@@ -23,7 +22,7 @@ public class Top3InfractionsByCityMapper implements Mapper<String, Ticket, Strin
 
     @Override
     public void setHazelcastInstance(HazelcastInstance hazelcastInstance) {
-        this.tickets = hazelcastInstance.getMultiMap(Util.HAZELCAST_NAMESPACE);
+        this.tickets = hazelcastInstance.getMultiMap(Constants.HAZELCAST_NAMESPACE);
     }
 
 

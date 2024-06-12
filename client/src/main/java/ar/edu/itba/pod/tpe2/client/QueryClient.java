@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.tpe2.client;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import com.hazelcast.client.HazelcastClient;
 import com.hazelcast.client.config.ClientConfig;
 import com.hazelcast.client.config.ClientNetworkConfig;
@@ -19,6 +19,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
+import static ar.edu.itba.pod.tpe2.client.Util.requireArgument;
+
 public abstract class QueryClient {
     private final static Logger logger = LoggerFactory.getLogger(QueryClient.class);
 
@@ -33,14 +35,15 @@ public abstract class QueryClient {
             checkArguments();
             this.hz = startHazelcastClient(this.addresses);
         } catch (IllegalArgumentException e) {
-            System.err.println("Oops! Invalid arguments were sent:\n" + e.getMessage());
+            System.err.println(Constants.ERROR_MESSAGE_INVALID_ARGUMENT + ": " + e.getMessage());
+            logger.error(e.getMessage(), e);
             System.exit(ExitCodes.ILLEGAL_ARGUMENT.ordinal());
         } catch (IllegalStateException e) {
-            System.err.println("Oops! We weren't able to connect to Hazelcast. Is the server running?");
+            System.err.println(Constants.ERROR_MESSAGE_SERVER_UNAVAILABLE + ": " + e.getMessage());
             logger.error(e.getMessage(), e);
             System.exit(ExitCodes.ILLEGAL_STATE.ordinal());
         } catch (Exception e) {
-            System.err.println("Oops! Something unexpected went wrong, try again!");
+            System.err.println(Constants.ERROR_MESSAGE_UNEXPECTED_ERROR);
             logger.error(e.getMessage(), e);
             System.exit(ExitCodes.UNKNOWN_ERROR.ordinal());
         }
@@ -49,7 +52,7 @@ public abstract class QueryClient {
     public void execute() {
         int status = ExitCodes.OK.ordinal();
         try {
-            logger.warn("Hazelcast client started.");
+            logger.info("Hazelcast client started.");
             logger.info("Starting to load data.");
             loadData();
             logger.info("Finished loading data.");
@@ -93,8 +96,8 @@ public abstract class QueryClient {
     private HazelcastInstance startHazelcastClient(String[] addresses) {
         ClientConfig clientConfig = new ClientConfig();
         GroupConfig groupConfig = new GroupConfig()
-                .setName(Util.HAZELCAST_GROUP_NAME)
-                .setPassword(Util.HAZELCAST_GROUP_PASSWORD);
+                .setName(Constants.HAZELCAST_GROUP_NAME)
+                .setPassword(Constants.HAZELCAST_GROUP_PASSWORD);
         clientConfig.setGroupConfig(groupConfig);
 
         ClientNetworkConfig clientNetworkConfig = new ClientNetworkConfig();
@@ -107,76 +110,52 @@ public abstract class QueryClient {
     }
 
     public void checkArguments() throws IllegalArgumentException {
-        StringBuilder errors = new StringBuilder();
-        String addressesArgument = System.getProperty("addresses");
-        String inPathArgument = System.getProperty("inPath");
-        String outPathArgument = System.getProperty("outPath");
-        String cityArgument = System.getProperty("city");
+        String addressesArgument = System.getProperty(ClientArguments.ADDRESS.getArgument());
+        String inPathArgument = System.getProperty(ClientArguments.IN_PATH.getArgument());
+        String outPathArgument = System.getProperty(ClientArguments.OUT_PATH.getArgument());
+        String cityArgument = System.getProperty(ClientArguments.CITY.getArgument());
 
-        if (addressesArgument == null) {
-            errors.append("Argument 'addresses' must be provided\n");
-        }
-        if (inPathArgument == null) {
-            errors.append("Argument 'inPath' must be provided\n");
-        }
-        if (outPathArgument == null) {
-            errors.append("Argument 'outPath' must be provided\n");
-        }
-        if (cityArgument == null) {
-            errors.append("Argument 'city' must be provided\n");
-        }
-
-        if (!errors.isEmpty()) {
-            throw new IllegalArgumentException(errors.toString());
-        }
+        requireArgument(addressesArgument, ClientArguments.ADDRESS);
+        requireArgument(inPathArgument, ClientArguments.IN_PATH);
+        requireArgument(outPathArgument, ClientArguments.OUT_PATH);
+        requireArgument(cityArgument, ClientArguments.CITY);
 
         this.addresses = addressesArgument.split(";");
 
         inPath = Paths.get(inPathArgument);
         if (!Files.isDirectory(inPath)) {
-            errors.append("Provided 'inPath' is not a directory\n");
+            throw new IllegalArgumentException("Provided " + ClientArguments.IN_PATH.getArgument() + " is not a directory");
         }
+
         outPath = Paths.get(outPathArgument);
         if (!Files.isDirectory(outPath)) {
-            errors.append("Provided 'outPath' is not a directory\n");
+            throw new IllegalArgumentException("Provided " + ClientArguments.OUT_PATH.getArgument() + " is not a directory");
         }
 
         Optional<Cities> maybeCity = Cities.cityFromString(cityArgument);
-        if (!maybeCity.isPresent()) {
-            errors.append("Provided 'city' is not a valid city\n");
-        } else {
-            city = maybeCity.get();
-        }
-
-        if (!errors.isEmpty()) {
-            throw new IllegalArgumentException(errors.toString());
-        }
+        city = maybeCity.orElseThrow(() -> new IllegalArgumentException("Provided " + ClientArguments.CITY.getArgument() + " is not a valid city"));
 
         generateTicketsPath();
         generateInfractionsPath();
-
-
     }
 
     private Path generateTicketsPath() throws IllegalArgumentException {
-        final String filename = Util.TICKETS_FILENAME + city.getCity() + ".csv";
+        final String filename = Constants.TICKETS_FILENAME + city.getCity() + ".csv";
 
         Path path = Path.of(inPath.toString(), filename);
         if (!Files.exists(path)) {
-            System.out.println(path);
-            throw new IllegalArgumentException("File '" + filename + "' does not exist in provided inPath");
+            throw new IllegalArgumentException("File '" + filename + "' does not exist in provided " + ClientArguments.IN_PATH.getArgument());
         }
         return path;
     }
 
     private Path generateInfractionsPath() throws IllegalArgumentException {
 
-        final String filename = Util.INFRACTIONS_FILENAME + city.getCity() + ".csv";
+        final String filename = Constants.INFRACTIONS_FILENAME + city.getCity() + ".csv";
 
         Path path = Path.of(inPath.toString(), filename);
         if (!Files.exists(path)) {
-            System.out.println(path);
-            throw new IllegalArgumentException("File '" + filename + "' does not exist in provided inPath");
+            throw new IllegalArgumentException("File '" + filename + "' does not exist in provided " + ClientArguments.IN_PATH.getArgument());
         }
         return path;
     }
@@ -188,11 +167,11 @@ public abstract class QueryClient {
         }
 
         LoadTicketsFromFile loadTickets = new LoadTicketsFromFile(
-                hz.getMultiMap(Util.HAZELCAST_NAMESPACE), generateTicketsPath(), city
+                hz.getMultiMap(Constants.HAZELCAST_NAMESPACE), generateTicketsPath(), city
         );
 
         LoadInfractionsFromFile loadInfractions = new LoadInfractionsFromFile(
-                hz.getMap(Util.HAZELCAST_NAMESPACE), generateInfractionsPath()
+                hz.getMap(Constants.HAZELCAST_NAMESPACE), generateInfractionsPath()
         );
 
         try {
@@ -235,7 +214,7 @@ public abstract class QueryClient {
             return;
         }
 
-        hz.getMap(Util.HAZELCAST_NAMESPACE).clear();
-        hz.getMultiMap(Util.HAZELCAST_NAMESPACE).clear();
+        hz.getMap(Constants.HAZELCAST_NAMESPACE).clear();
+        hz.getMultiMap(Constants.HAZELCAST_NAMESPACE).clear();
     }
 }

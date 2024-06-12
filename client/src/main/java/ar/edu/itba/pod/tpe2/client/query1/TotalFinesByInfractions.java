@@ -1,12 +1,11 @@
 package ar.edu.itba.pod.tpe2.client.query1;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.data.Infractions;
 import ar.edu.itba.pod.data.Ticket;
 import ar.edu.itba.pod.query1.FinesMapper;
 import ar.edu.itba.pod.query1.FinesReducer;
 import ar.edu.itba.pod.tpe2.client.QueryClient;
-import ar.edu.itba.pod.tpe2.client.query2.Top3InfractionsByCityResult;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
@@ -27,9 +26,9 @@ public class TotalFinesByInfractions extends QueryClient {
 
     @Override
     public void resolveQuery() throws ExecutionException, InterruptedException, IOException {
-        final JobTracker jobTracker = getHz().getJobTracker(Util.HAZELCAST_NAMESPACE);
+        final JobTracker jobTracker = getHz().getJobTracker(Constants.HAZELCAST_NAMESPACE);
 
-        final KeyValueSource<String, Ticket> source = KeyValueSource.fromMultiMap(getHz().getMultiMap(Util.HAZELCAST_NAMESPACE));
+        final KeyValueSource<String, Ticket> source = KeyValueSource.fromMultiMap(getHz().getMultiMap(Constants.HAZELCAST_NAMESPACE));
 
         Job<String, Ticket> job = jobTracker.newJob(source);
 
@@ -39,7 +38,7 @@ public class TotalFinesByInfractions extends QueryClient {
                 .submit()
                 .get();
 
-        Map<String, Infractions> infractionsMap = getHz().getMap(Util.HAZELCAST_NAMESPACE);
+        Map<String, Infractions> infractionsMap = getHz().getMap(Constants.HAZELCAST_NAMESPACE);
         List<TotalFinesByInfractionsResult> results = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : reducedData.entrySet()) {
 

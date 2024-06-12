@@ -1,6 +1,6 @@
 package ar.edu.itba.pod.query5;
 
-import ar.edu.itba.pod.Util;
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.data.Ticket;
 import com.hazelcast.core.HazelcastInstance;
 import com.hazelcast.core.HazelcastInstanceAware;
@@ -15,7 +15,7 @@ public class InfractionsToAverageMapper implements Mapper<String, Ticket, String
 
     @Override
     public void setHazelcastInstance (HazelcastInstance hazelcastInstance){
-        this.tickets = hazelcastInstance.getMultiMap(Util.HAZELCAST_NAMESPACE);
+        this.tickets = hazelcastInstance.getMultiMap(Constants.HAZELCAST_NAMESPACE);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ar.edu.itba.pod.tpe2.client;
 
+import ar.edu.itba.pod.Constants;
 import ar.edu.itba.pod.data.Infractions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,8 @@ public class LoadInfractionsFromFile {
                 map.put(fields[0], Infractions.of(fields[0], fields[1]));
             });
         } catch (IOException e) {
-            logger.error("Could not load infractions data :(", e);
+            System.err.println(Constants.ERROR_MESSAGE_IO);
+            logger.error("Could not load infractions data", e);
             throw e;
         }
     }
