@@ -13,9 +13,7 @@ import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,6 +52,22 @@ public class SameAverageValuePairs extends QueryClient {
                 .submit()
                 .get();
         System.out.println(groupByAverage);
+
+        Set<SameAverageValuePairsResults> results = formatResults(groupByAverage);
+        writeResults(results);
+    }
+
+    private Set<SameAverageValuePairsResults> formatResults(Map<Integer, List<String>> groupByAverage){
+        Set<SameAverageValuePairsResults> results = new TreeSet<>();
+        for(Integer key : groupByAverage.keySet()){
+            List<String> values = groupByAverage.get(key);
+            for(int i = 0; i < values.size(); i++){
+                for(int j = i + 1; j < values.size(); j++){
+                    results.add(new SameAverageValuePairsResults(key.toString(), values.get(i), values.get(j)));
+                }
+            }
+        }
+        return results;
     }
 
     private void loadAuxData(Map<String, Double> infractionsAverage) throws ExecutionException, InterruptedException {
