@@ -56,7 +56,7 @@ public class TopNEarningAgencies extends QueryClient {
 
     @Override
     public String getQueryNumber() {
-        return "query3";
+        return "3";
     }
 
     @Override

@@ -3,10 +3,9 @@ package ar.edu.itba.pod.tpe2.client.query4;
 import ar.edu.itba.pod.Util;
 import ar.edu.itba.pod.data.Infractions;
 import ar.edu.itba.pod.data.Ticket;
-import ar.edu.itba.pod.query2.Top3InfractionsByCityMapper;
-import ar.edu.itba.pod.query2.Top3InfractionsByCityReducer;
+import ar.edu.itba.pod.query4.MostInfractionsInRangeMapper;
+import ar.edu.itba.pod.query4.MostInfractionsInRangeReducer;
 import ar.edu.itba.pod.tpe2.client.QueryClient;
-import ar.edu.itba.pod.tpe2.client.query2.Top3InfractionsByCityResult;
 import com.hazelcast.mapreduce.Job;
 import com.hazelcast.mapreduce.JobTracker;
 import com.hazelcast.mapreduce.KeyValueSource;
@@ -14,13 +13,12 @@ import com.hazelcast.mapreduce.KeyValueSource;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
 
 public class MostInfractionsInRange extends QueryClient {
-    private static final DateTimeFormatter ARGUMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yy");
+    private static final DateTimeFormatter ARGUMENT_DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private LocalDate from;
     private LocalDate to;
 
@@ -40,29 +38,24 @@ public class MostInfractionsInRange extends QueryClient {
 
         Job<String, Ticket> job = jobTracker.newJob(source);
 
-        Map<String, List<String>> reducedData = job
-                .mapper(new Top3InfractionsByCityMapper())
-                .reducer(new Top3InfractionsByCityReducer())
+        Map<String, String> reducedData = job
+                .mapper(new MostInfractionsInRangeMapper(from, to))
+                .reducer(new MostInfractionsInRangeReducer())
                 .submit()
                 .get();
 
         Map<String, Infractions> infractionsMap = getHz().getMap(Util.HAZELCAST_NAMESPACE);
-        List<MostInfractionsInRangeResult> results = new ArrayList<>();
-        for (Map.Entry<String, List<String>> entry : reducedData.entrySet()) {
+        TreeSet<MostInfractionsInRangeResult> results = new TreeSet<>();
 
-            String infraction1 = !entry.getValue().isEmpty() && infractionsMap.containsKey(entry.getValue().get(0))
-                    ? infractionsMap.get(entry.getValue().get(0)).getDescription()
-                    : "";
+        for (Map.Entry<String, String> entry : reducedData.entrySet()) {
+            String[] values = entry.getValue().split(";");
+            String county = entry.getKey();
+            String plate = values[0];
+            Integer tickets = Integer.parseInt(values[1]);
 
-            String infraction2 = entry.getValue().size() > 1 && infractionsMap.containsKey(entry.getValue().get(1))
-                    ? infractionsMap.get(entry.getValue().get(1)).getDescription()
-                    : "";
-
-            String infraction3 = entry.getValue().size() > 2 && infractionsMap.containsKey(entry.getValue().get(2))
-                    ? infractionsMap.get(entry.getValue().get(2)).getDescription()
-                    : "";
-            results.add(new MostInfractionsInRangeResult(entry.getKey(), infraction1, infraction2, infraction3));
+            results.add(new MostInfractionsInRangeResult(county, plate, tickets));
         }
+
         writeResults(results);
     }
 
