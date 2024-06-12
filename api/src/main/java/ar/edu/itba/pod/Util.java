@@ -8,7 +8,7 @@ public class Util {
     public final static String HAZELCAST_GROUP_PASSWORD = "hadbojhcvhdfx95+wxe68";
     public final static String HAZELCAST_NAMESPACE = "g5-namespace";
 
-    public final static String HAZELCAST_NAMESPACE_2 = "g5-namespace-aux";
+    public final static String HAZELCAST_NAMESPACE_QUERY_5 = "g5-namespace-aux";
 
     public static final int SYSTEM_TIMEOUT = 1;
 
