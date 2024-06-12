@@ -18,8 +18,6 @@ import java.nio.file.StandardOpenOption;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public abstract class QueryClient {
     private final static Logger logger = LoggerFactory.getLogger(QueryClient.class);
@@ -189,27 +187,20 @@ public abstract class QueryClient {
             return;
         }
 
-        try (ExecutorService service = Executors.newCachedThreadPool()) {
-            service.submit(new LoadTicketsRunnable(
-                    hz.getMultiMap(Util.HAZELCAST_NAMESPACE), generateTicketsPath(), city
-            ));
+        LoadTicketsFromFile loadTickets = new LoadTicketsFromFile(
+                hz.getMultiMap(Util.HAZELCAST_NAMESPACE), generateTicketsPath(), city
+        );
 
-            service.submit(new LoadInfractionsRunnable(
-                    hz.getMap(Util.HAZELCAST_NAMESPACE), generateInfractionsPath()
-            ));
+        LoadInfractionsFromFile loadInfractions = new LoadInfractionsFromFile(
+                hz.getMap(Util.HAZELCAST_NAMESPACE), generateInfractionsPath()
+        );
 
-            service.shutdown();
-            boolean finished = service.awaitTermination(Util.SYSTEM_TIMEOUT, Util.SYSTEM_TIMEOUT_UNIT);
-            if (!finished) {
-                logger.error(
-                        "Load data service timed out after {} {} before reading all data.",
-                        Util.SYSTEM_TIMEOUT,
-                        Util.SYSTEM_TIMEOUT_UNIT
-                );
-            }
-        } catch (InterruptedException e) {
-            logger.error("Interrupted load of data");
-            System.exit(2);
+        try {
+            loadTickets.load();
+            loadInfractions.load();
+        } catch (IOException e) {
+            logger.error(e.getMessage(), e);
+            System.exit(ExitCodes.IO_ERROR.ordinal());
         }
     }
 

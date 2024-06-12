@@ -10,10 +10,6 @@ public class Util {
 
     public final static String HAZELCAST_NAMESPACE_2 = "g5-namespace-aux";
 
-    public static final int SYSTEM_TIMEOUT = 1;
-
-    public static final TimeUnit SYSTEM_TIMEOUT_UNIT = TimeUnit.MINUTES;
-
     public static final String TICKETS_FILENAME = "tickets";
     public static final String INFRACTIONS_FILENAME = "infractions";
 

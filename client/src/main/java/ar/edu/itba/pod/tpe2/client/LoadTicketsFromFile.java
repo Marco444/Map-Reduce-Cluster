@@ -10,21 +10,20 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
-public class LoadTicketsRunnable implements Runnable {
-    private final static Logger logger = LoggerFactory.getLogger(LoadTicketsRunnable.class);
+public class LoadTicketsFromFile {
+    private final static Logger logger = LoggerFactory.getLogger(LoadTicketsFromFile.class);
 
     private final MultiMap<String, Ticket> multiMap;
     private final Path filePath;
     private final Cities city;
 
-    public LoadTicketsRunnable(MultiMap<String, Ticket> multiMap, Path filePath, Cities city) {
+    public LoadTicketsFromFile(MultiMap<String, Ticket> multiMap, Path filePath, Cities city) {
         this.multiMap = multiMap;
         this.filePath = filePath;
         this.city = city;
     }
 
-    @Override
-    public void run() {
+    public void load() throws IOException {
         try (Stream<String> lines = Files.lines(filePath).skip(1).parallel()) {
             lines.forEach(line -> {
                 String[] fields = line.split(";");
@@ -51,6 +50,7 @@ public class LoadTicketsRunnable implements Runnable {
             });
         } catch (IOException e) {
             logger.error("Could not load data :(", e);
+            throw e;
         }
     }
 }

@@ -10,19 +10,18 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.stream.Stream;
 
-public class LoadInfractionsRunnable implements Runnable {
-    private final static Logger logger = LoggerFactory.getLogger(LoadInfractionsRunnable.class);
+public class LoadInfractionsFromFile {
+    private final static Logger logger = LoggerFactory.getLogger(LoadInfractionsFromFile.class);
 
     private final Map<String, Infractions> map;
     private final Path filePath;
 
-    public LoadInfractionsRunnable(Map<String, Infractions> map, Path filePath) {
+    public LoadInfractionsFromFile(Map<String, Infractions> map, Path filePath) {
         this.map = map;
         this.filePath = filePath;
     }
 
-    @Override
-    public void run() {
+    public void load() throws IOException {
         try (Stream<String> lines = Files.lines(filePath).skip(1).parallel()) {
             lines.forEach(line -> {
                 String[] fields = line.split(";");
@@ -30,6 +29,7 @@ public class LoadInfractionsRunnable implements Runnable {
             });
         } catch (IOException e) {
             logger.error("Could not load infractions data :(", e);
+            throw e;
         }
     }
 }
