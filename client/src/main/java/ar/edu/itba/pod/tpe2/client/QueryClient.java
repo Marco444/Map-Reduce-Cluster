@@ -52,39 +52,44 @@ public abstract class QueryClient {
     public void execute() {
         int status = ExitCodes.OK.ordinal();
         try {
-            logger.info("Hazelcast client started.");
-            logger.info("Starting to load data.");
+            logger.info("=== START Query {} ===", getQueryNumber());
+
+            logger.info("START - Data loading");
             loadData();
-            logger.info("Finished loading data.");
-            logger.info("Starting map/reduce job.");
+            logger.info("END - Data loading");
+
+            logger.info("START - MapReduce job");
             resolveQuery();
-            logger.info("Finished map/reduce job.");
+            logger.info("END - MapReduce job");
         } catch (IllegalArgumentException e) {
-            System.err.println("Oops! Invalid arguments were sent:\n" + e.getMessage());
+            System.err.println(Constants.ERROR_MESSAGE_INVALID_ARGUMENT + ": " + e.getMessage());
             status = ExitCodes.ILLEGAL_ARGUMENT.ordinal();
         } catch (ExecutionException | InterruptedException e) {
             System.err.println("Oops! Something went wrong, try again!");
             logger.error(e.getMessage(), e);
             status = ExitCodes.EXECUTION_ERROR.ordinal();
         } catch (IOException e) {
-            System.err.println("Oops! Something went wrong when trying to write the results, try again!");
+            System.err.println(Constants.ERROR_MESSAGE_IO + ": " + e.getMessage());
             logger.error(e.getMessage(), e);
             status = ExitCodes.IO_ERROR.ordinal();
         } catch (IllegalStateException e) {
-            System.err.println("Oops! We weren't able to connect to Hazelcast. Is the server running?");
+            System.err.println(Constants.ERROR_MESSAGE_SERVER_UNAVAILABLE + ": " + e.getMessage());
             logger.error(e.getMessage(), e);
             status = ExitCodes.ILLEGAL_STATE.ordinal();
         } catch (Exception e) {
-            System.err.println("Oops! Something unexpected went wrong, try again!");
+            System.err.println(Constants.ERROR_MESSAGE_UNEXPECTED_ERROR);
             logger.error(e.getMessage(), e);
             status = ExitCodes.UNKNOWN_ERROR.ordinal();
         } finally {
-            logger.info("Destroying data.");
+            logger.info("START - Data destroy.");
             destroyData();
-            logger.info("All data was destroyed.");
+            logger.info("END - Data destroy.");
+
             if (this.hz != null) {
                 this.hz.shutdown();
             }
+
+            logger.info("=== END Query {} ===", getQueryNumber());
         }
         System.exit(status);
     }
@@ -162,7 +167,7 @@ public abstract class QueryClient {
 
     private void loadData() {
         if (hz == null) {
-            logger.error("Tried to load data with NULL Hazelcast instance.");
+            logger.info("No Hazelcast instance found while tryng to load data.");
             return;
         }
 
@@ -211,6 +216,7 @@ public abstract class QueryClient {
 
     private void destroyData() {
         if (hz == null) {
+            logger.info("No Hazelcast instance. Doing nothing.");
             return;
         }
 
