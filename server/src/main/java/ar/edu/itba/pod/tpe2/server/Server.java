@@ -33,6 +33,8 @@ public class Server {
 
         config.setNetworkConfig(networkConfig);
 
+        config.setProperty("hazelcast.logging.type", "none");
+
         config.getMultiMapConfig(Constants.HAZELCAST_NAMESPACE)
                 .setValueCollectionType(MultiMapConfig.ValueCollectionType.LIST);
 

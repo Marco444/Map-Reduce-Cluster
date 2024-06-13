@@ -54,13 +54,13 @@ public abstract class QueryClient {
         try {
             logger.info("=== START Query {} ===", getQueryNumber());
 
-            logger.info("START - Data loading");
+            logger.info("START - Data loading.");
             loadData();
-            logger.info("END - Data loading");
+            logger.info("END - Data loading.");
 
-            logger.info("START - MapReduce job");
+            logger.info("START - MapReduce job.");
             resolveQuery();
-            logger.info("END - MapReduce job");
+            logger.info("END - MapReduce job.");
         } catch (IllegalArgumentException e) {
             System.err.println(Constants.ERROR_MESSAGE_INVALID_ARGUMENT + ": " + e.getMessage());
             status = ExitCodes.ILLEGAL_ARGUMENT.ordinal();
