@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 public class TopNEarningAgencies extends QueryClient {
     private final int n;
@@ -48,10 +49,9 @@ public class TopNEarningAgencies extends QueryClient {
             sum += entry.getValue();
         }
         for (String key : reducedData.keySet()) {
-            System.out.println(key + ": " + (reducedData.get(key) / sum) * 100 + "%");
             results.add(new TopNEarningAgenciesResult(key, (reducedData.get(key) / sum) * 100));
         }
-        writeResults(results);
+        writeResults(results.stream().limit(n).collect(Collectors.toCollection(TreeSet::new)));
     }
 
     @Override
@@ -72,8 +72,9 @@ public class TopNEarningAgencies extends QueryClient {
         int n = 0;
         try {
             n = Integer.parseInt(nArgument);
+            if (n <= 0) {throw new NumberFormatException();}
         } catch (NumberFormatException e) {
-            System.err.println("Argument " + ClientArguments.AGENCIES_NUMBER.getArgument() + " must be an integer");
+            System.err.println("Argument " + ClientArguments.AGENCIES_NUMBER.getArgument() + " must be a positive integer");
             System.exit(ExitCodes.ILLEGAL_ARGUMENT.ordinal());
         }
 
