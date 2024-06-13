@@ -22,4 +22,4 @@ if [ ! -d "$SERVER_PATH" ]; then
 fi
 
 
-bash "$SERVER_PATH/run-server.sh"
+bash "$SERVER_PATH/run-server.sh" "$@"
