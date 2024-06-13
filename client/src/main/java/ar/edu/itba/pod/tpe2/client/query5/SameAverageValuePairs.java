@@ -35,7 +35,7 @@ public class SameAverageValuePairs extends QueryClient {
                 .reducer(new InfractionsToAverageReducer())
                 .submit()
                 .get();
-        System.out.println(infractionsAverage);
+
 
         loadAuxData(infractionsAverage);
         // 2nd Map-Reduce
@@ -48,7 +48,7 @@ public class SameAverageValuePairs extends QueryClient {
                 .reducer(new groupByAverageReducer())
                 .submit()
                 .get();
-        System.out.println(groupByAverage);
+
 
         Set<SameAverageValuePairsResults> results = formatResults(groupByAverage);
         writeResults(results);
