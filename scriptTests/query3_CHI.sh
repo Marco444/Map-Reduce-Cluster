@@ -2,11 +2,11 @@
 #
 #
 
-BASE_PATH="../client/src/main/java/ar/edu/itba/pod/tpe2/client"
 ADDRESS='localhost:5701'
 CITY='CHI'
-IN_PATH='../example/data'
-OUT_PATH='../output'
+IN_PATH="$(pwd)/../example/data"
+OUT_PATH="$(pwd)/../output"
+QUERIES_PATH="$(pwd)/../client/target/hazelcast-com-client-2024.1Q/"
 N='4'
 
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"
@@ -15,4 +15,4 @@ if ! pushd "${SCRIPT_DIR}" &> /dev/null; then
         exit 1
 fi
 
-bash query3.sh -Daddresses="$ADDRESS" -DinPath="$IN_PATH" -DoutPath="$OUT_PATH" -Dcity="$CITY" -Dn="$N"
+bash "$QUERIES_PATH"/query3.sh -Daddresses="$ADDRESS" -DinPath="$IN_PATH" -DoutPath="$OUT_PATH" -Dcity="$CITY" -Dn="$N"

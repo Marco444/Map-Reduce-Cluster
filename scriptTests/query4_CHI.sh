@@ -2,11 +2,11 @@
 #
 #
 
-BASE_PATH="../client/src/main/java/ar/edu/itba/pod/tpe2/client"
 ADDRESS='localhost:5701'
 CITY='CHI'
-IN_PATH='../example/data'
-OUT_PATH='../output'
+IN_PATH="$(pwd)/../example/data"
+OUT_PATH="$(pwd)/../output"
+QUERIES_PATH="$(pwd)/../client/target/hazelcast-com-client-2024.1Q/"
 FROM_DATE='01/01/2004'
 TO_DATE='31/12/2005'
 
@@ -16,4 +16,4 @@ if ! pushd "${SCRIPT_DIR}" &> /dev/null; then
         exit 1
 fi
 
-bash query4.sh -Daddresses="$ADDRESS" -DinPath="$IN_PATH" -DoutPath="$OUT_PATH" -Dcity="$CITY" -Dfrom="$FROM_DATE" -Dto="$TO_DATE"
+bash "$QUERIES_PATH"/query4.sh -Daddresses="$ADDRESS" -DinPath="$IN_PATH" -DoutPath="$OUT_PATH" -Dcity="$CITY" -Dfrom="$FROM_DATE" -Dto="$TO_DATE"
