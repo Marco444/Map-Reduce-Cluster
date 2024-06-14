@@ -1,5 +1,10 @@
 # Parking Fines in NYC and CHI
 
+>
+> Important: This project implements two optimizations that, in order to test and compare, are in other branches that are not
+> main. The branches are `implement-combiner` and `implement-aux-optimization`.
+> 
+
 ## Objective
 
 This project involves the development of a thread-safe remote system for the management of parking fines in New York City and Chicago. The system allows querying and providing reports on parking fines in both cities. 
