@@ -23,13 +23,6 @@ public class groupByAverageMapper implements Mapper<String, Double, Integer, Str
 
     @Override
     public void map(String s, Double avg, Context<Integer, String> context) {
-        if (averages == null) {
-            return;
-        }
-        if (infractions == null || infractions.get(s) == null) {
-            return;
-        }
-
         context.emit(((avg.intValue()) / 100) * 100, infractions.get(s).getDescription());
     }
 }
