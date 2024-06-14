@@ -2,7 +2,7 @@
 
 ## Objective
 
-This project involves the development of a thread-safe remote system for the management of parking fines in New York City and Chicago. The system allows querying and providing reports on parking fines in both cities. It addresses the fundamental aspects of the parking fine management process from the perspectives of citizens, agencies, and city administration.
+This project involves the development of a thread-safe remote system for the management of parking fines in New York City and Chicago. The system allows querying and providing reports on parking fines in both cities. 
 
 ### Prerequisites
 
@@ -44,7 +44,9 @@ Give all Client scripts execution permission:
 chmod +x queryX.sh
 ```
 
-You have to know all IP addresses and ports of the nodes in the cluster! To run any client script, you must provide the following parameters:
+> You have to know at least one IP address and port of one node in the cluster.
+
+To run any client script, you must provide the following parameters:
 
 - `inPath`: The path to the input file.
 - `outPath`: The path to the output file.
@@ -66,7 +68,7 @@ And finally run the desired `queryX.sh` like the following:
 ```bash
 ./query1.sh -DinPath=./example/data -DoutPath=./output -Daddresses="192.168.1.*:5701" -Dcity=NYC
 ```
-This example runs the query 1 for the city of NYC. For query 2 and 5 is the same, but you must run `query2.sh` and `query5.sh` respectively. For query 3 and 4, you must provide the additional parameters mentioned above.
+This example runs the query 1 for the city of NYC. For query 3 and 4, you must provide the additional parameters mentioned above.
 Like the following:
 
 - `query3`:
@@ -79,12 +81,17 @@ Like the following:
 ./query4.sh -DinPath=./example/data -DoutPath=./output -Daddresses="192.168.1.*:5701" -Dcity=NYC -Dfrom=01/01/2019 -Dto=01/01/2020
 ```
 
-## Scrip tests
+## Script tests
 
 For testing purposes only, there are custom made scripts in the directory `scripTests`.
-Only give execution permission to the scripts and run them.
-The only change is de `city` parameter, which is in the file name.
-All of them run with one node in the cluster.
+Just give execution permission to the scripts and run them.
+
+These scripts do not need any parameters.
+
+>
+> In order to run the scripts, the cluster must have at least one node and 
+> available at `localhost:5701`
+> 
 
 ## Team members
 

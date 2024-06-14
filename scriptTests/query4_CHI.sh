@@ -3,7 +3,7 @@
 #
 
 BASE_PATH="../client/src/main/java/ar/edu/itba/pod/tpe2/client"
-ADDRESS='localhost:50058'
+ADDRESS='localhost:5701'
 CITY='CHI'
 IN_PATH='../example/data'
 OUT_PATH='../output'
