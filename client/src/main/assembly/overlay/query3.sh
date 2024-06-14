@@ -7,7 +7,7 @@ if ! pushd "${SCRIPT_DIR}" &> /dev/null; then
 fi
 
 PATH_TO_CODE_BASE="$(pwd)"
-JAVA_OPTS="-Djava.rmi.server.codebase=file://$PATH_TO_CODE_BASE/lib/jars/hazelcast-com-client-2024.1Q.jar"
+JAVA_OPTS="-Djava.rmi.server.codebase=file://$PATH_TO_CODE_BASE/lib/jars/hazelcast-com-client-2024.1Q.jar -DqueryNum=3"
 MAIN_CLASS="ar.edu.itba.pod.tpe2.client.query3.TopNEarningAgencies"
 
 java $JAVA_OPTS "$@" -cp 'lib/jars/*' "$MAIN_CLASS"

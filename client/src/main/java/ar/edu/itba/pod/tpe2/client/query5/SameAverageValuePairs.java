@@ -25,7 +25,10 @@ public class SameAverageValuePairs extends QueryClient {
     @Override
     public void resolveQuery() throws ExecutionException, InterruptedException, IOException {
 
+        getFileLogger().info("Inicio del trabajo map/reduce (completo)");
+
         // 1st Map-Reduce
+        getFileLogger().info("Inicio del 1er trabajo map/reduce");
         final JobTracker jobTracker = getHz().getJobTracker(Constants.HAZELCAST_NAMESPACE);
         final KeyValueSource<String, Ticket> source = KeyValueSource.fromMultiMap(getHz().getMultiMap(Constants.HAZELCAST_NAMESPACE));
         Job<String, Ticket> infractionsAverageJob = jobTracker.newJob(source);
@@ -35,10 +38,11 @@ public class SameAverageValuePairs extends QueryClient {
                 .reducer(new InfractionsToAverageReducer())
                 .submit()
                 .get();
-
+        getFileLogger().info("Fin del 1er trabajo map/reduce");
 
         loadAuxData(infractionsAverage);
         // 2nd Map-Reduce
+        getFileLogger().info("Inicio del 2do trabajo map/reduce");
         final JobTracker groupByAverageJobTracker = getHz().getJobTracker(Constants.HAZELCAST_NAMESPACE_QUERY_5);
         final KeyValueSource<String, Double> groupByAverageJobSource = KeyValueSource.fromMap(getHz().getMap(Constants.HAZELCAST_NAMESPACE_QUERY_5));
         Job<String, Double> groupByAverageJob = groupByAverageJobTracker.newJob(groupByAverageJobSource);
@@ -48,10 +52,12 @@ public class SameAverageValuePairs extends QueryClient {
                 .reducer(new groupByAverageReducer())
                 .submit()
                 .get();
-
+        getFileLogger().info("Fin del 2do trabajo map/reduce");
 
         Set<SameAverageValuePairsResults> results = formatResults(groupByAverage);
         writeResults(results);
+
+        getFileLogger().info("Inicio del trabajo map/reduce (completo)");
     }
 
     private Set<SameAverageValuePairsResults> formatResults(Map<Integer, List<String>> groupByAverage){

@@ -30,6 +30,9 @@ public class TopNEarningAgencies extends QueryClient {
 
     @Override
     public void resolveQuery() throws ExecutionException, InterruptedException, IOException {
+
+        getFileLogger().info("Inicio del trabajo map/reduce");
+
         final JobTracker jobTracker = getHz().getJobTracker(Constants.HAZELCAST_NAMESPACE);
 
         final KeyValueSource<String, Ticket> source = KeyValueSource.fromMultiMap(getHz().getMultiMap(Constants.HAZELCAST_NAMESPACE));
@@ -52,6 +55,8 @@ public class TopNEarningAgencies extends QueryClient {
             results.add(new TopNEarningAgenciesResult(key, (reducedData.get(key) / sum) * 100));
         }
         writeResults(results.stream().limit(n).collect(Collectors.toCollection(TreeSet::new)));
+
+        getFileLogger().info("Fin del trabajo map/reduce");
     }
 
     @Override
