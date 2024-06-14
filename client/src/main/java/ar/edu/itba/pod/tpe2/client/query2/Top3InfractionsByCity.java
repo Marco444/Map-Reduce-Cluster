@@ -24,6 +24,9 @@ public class Top3InfractionsByCity extends QueryClient {
     }
     @Override
     public void resolveQuery() throws ExecutionException, InterruptedException, IOException {
+
+        getFileLogger().info("Inicio del trabajo map/reduce");
+
         final JobTracker jobTracker = getHz().getJobTracker(Constants.HAZELCAST_NAMESPACE);
 
         final KeyValueSource<String, Ticket> source = KeyValueSource.fromMultiMap(getHz().getMultiMap(Constants.HAZELCAST_NAMESPACE));
@@ -54,6 +57,8 @@ public class Top3InfractionsByCity extends QueryClient {
             results.add(new Top3InfractionsByCityResult(entry.getKey(), infraction1, infraction2, infraction3));
         }
         writeResults(results);
+
+        getFileLogger().info("Fin del trabajo map/reduce");
     }
 
     @Override

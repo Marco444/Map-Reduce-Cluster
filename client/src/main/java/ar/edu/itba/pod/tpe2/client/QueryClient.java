@@ -23,6 +23,7 @@ import static ar.edu.itba.pod.tpe2.client.Util.requireArgument;
 
 public abstract class QueryClient {
     private final static Logger logger = LoggerFactory.getLogger(QueryClient.class);
+    private final static Logger fileLogger = LoggerFactory.getLogger("com.query.timeLogger");
 
     private HazelcastInstance hz;
     private String[] addresses;
@@ -31,6 +32,7 @@ public abstract class QueryClient {
     private Cities city;
 
     public QueryClient() {
+        fileLogger.info("=============== Nueva Query ===============");
         try {
             checkArguments();
             this.hz = startHazelcastClient(this.addresses);
@@ -171,6 +173,8 @@ public abstract class QueryClient {
             return;
         }
 
+        fileLogger.info("Inicio de la lectura del archivo");
+
         LoadTicketsFromFile loadTickets = new LoadTicketsFromFile(
                 hz.getMultiMap(Constants.HAZELCAST_NAMESPACE), generateTicketsPath(), city
         );
@@ -186,6 +190,8 @@ public abstract class QueryClient {
             logger.error(e.getMessage(), e);
             System.exit(ExitCodes.IO_ERROR.ordinal());
         }
+
+        fileLogger.info("Fin de lectura del archivo");
     }
 
     public void writeResults(Collection<? extends Result> results) throws IOException {
@@ -203,6 +209,8 @@ public abstract class QueryClient {
             }
         }
     }
+
+    public Logger getFileLogger(){return fileLogger;}
 
     public String[] getAddresses() {
         return addresses;
