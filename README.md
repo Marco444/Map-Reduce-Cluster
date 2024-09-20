@@ -1,13 +1,9 @@
-# Parking Fines in NYC and CHI
+# Map Reduce Cluster for Distribuited Data Analysis
 
->
-> Important: This project implements two optimizations that, in order to test and compare, are in other branches that are not
-> main. The branches are `implement-combiner` and `implement-aux-optimization`.
-> 
 
 ## Objective
 
-This project involves the development of a thread-safe remote system for the management of parking fines in New York City and Chicago. The system allows querying and providing reports on parking fines in both cities. 
+This project defines a Map Reduce cluster using Hazelcast. The project compiles into two executables (a) client script to interact with the cluster (b) a server script to be run in each node of the cluster. Finally, communication is done through sockets.
 
 ### Prerequisites
 
